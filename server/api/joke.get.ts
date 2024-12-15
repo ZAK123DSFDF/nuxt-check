@@ -1,20 +1,15 @@
-let jokeCache: { value: string; expiry: number } | null = null
-interface response {
-  value: string
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
 export default defineEventHandler(async () => {
-  const now = Date.now()
-  if (jokeCache && jokeCache.expiry > now) {
-    return jokeCache.value
-  }
-  const response: response = await $fetch(
+  // Introduce a delay of 3 seconds
+  await delay(3000)
+
+  // Fetch the joke from the API
+  const response = await $fetch<{ value: string }>(
     "https://api.chucknorris.io/jokes/random"
   )
-  const joke = response.value
-  jokeCache = {
-    value: joke,
-    expiry: now + 5 * 1000,
-  }
 
-  return joke
+  return response.value + " (Date: " + new Date().toISOString() + ")"
 })
